@@ -1,0 +1,36 @@
+import express, { Application, Request, Response } from 'express'
+import cors from 'cors'
+import router from './app/routes'
+import globalErrorHandler from './app/middlewares/globalErrorhandler'
+import notFound from './app/middlewares/notFound'
+import path from 'path'
+const app: Application = express()
+
+// parser
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(
+  cors({
+    origin: [
+      'https://bhojjo.com',
+      'https://bhojjo.netlify.app',
+      'http://localhost:5173',
+    ],
+    credentials: true,
+  }),
+)
+
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
+
+// application routes
+app.use('/api', router)
+
+app.get('/', (req: Request, res: Response) => {
+  res.send('Bhojjo Running!')
+})
+app.use(globalErrorHandler)
+
+//Not Found
+app.use(notFound)
+
+export default app
