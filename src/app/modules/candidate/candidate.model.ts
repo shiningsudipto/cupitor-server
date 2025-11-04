@@ -2,14 +2,14 @@ import { Model, Schema, model } from 'mongoose'
 import bcrypt from 'bcrypt'
 import config from '../../config'
 
-export type TUser = {
+export type TCandidate = {
   _id: string
   name: string
   email: string
   avatar?: string
   password: string
   phone: string
-  role?: 'candidate'
+  role: 'candidate'
   city: string
   address?: string
   skills?: string[]
@@ -26,9 +26,9 @@ export const USER_ROLE = {
   company: 'company',
 }
 
-export interface UserModel extends Model<TUser> {
+export interface UserModel extends Model<TCandidate> {
   //instance methods for checking if the user exist
-  isUserExistsByPhone(phone: string): Promise<TUser>
+  isUserExistsByPhone(phone: string): Promise<TCandidate>
   //instance methods for checking if passwords are matched
   isPasswordMatched(
     plainTextPassword: string,
@@ -36,11 +36,11 @@ export interface UserModel extends Model<TUser> {
   ): Promise<boolean>
 }
 
-const userSchema = new Schema<TUser, UserModel>(
+const candidateSchema = new Schema<TCandidate, UserModel>(
   {
-    name: { type: String },
-    email: { type: String, required: false },
-    password: { type: String },
+    name: { type: String, required: true },
+    email: { type: String, required: true },
+    password: { type: String, required: true },
     avatar: { type: String },
     phone: { type: String, required: true, unique: true },
     role: {
@@ -51,7 +51,7 @@ const userSchema = new Schema<TUser, UserModel>(
     address: { type: String, required: false },
     city: { type: String, required: false },
     skills: { type: Array, required: false },
-    education: { type: String, required: true },
+    education: { type: String, required: false },
     yearsOfExperience: { type: String, required: false },
     github: { type: String, required: false },
     linkedin: { type: String, required: true },
@@ -61,7 +61,7 @@ const userSchema = new Schema<TUser, UserModel>(
   },
 )
 
-userSchema.pre('save', async function (next) {
+candidateSchema.pre('save', async function (next) {
   // eslint-disable-next-line @typescript-eslint/no-this-alias
   const user = this // doc
   // hashing password and save into DB
@@ -75,7 +75,7 @@ userSchema.pre('save', async function (next) {
   next()
 })
 
-userSchema.methods.toJSON = function () {
+candidateSchema.methods.toJSON = function () {
   const userObject = this.toObject()
 
   delete userObject.password
@@ -84,15 +84,15 @@ userSchema.methods.toJSON = function () {
 }
 
 // Static method to find user by phone
-userSchema.statics.isUserExistsByPhone = async function (phone: string) {
+candidateSchema.statics.isUserExistsByPhone = async function (phone: string) {
   return await this.findOne({ phone })
 }
 
-userSchema.statics.isPasswordMatched = async function (
+candidateSchema.statics.isPasswordMatched = async function (
   plainTextPassword,
   hashedPassword,
 ) {
   return await bcrypt.compare(plainTextPassword, hashedPassword)
 }
 
-export const User = model<TUser, UserModel>('User', userSchema)
+export const Candidate = model<TCandidate, UserModel>('User', candidateSchema)

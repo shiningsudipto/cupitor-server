@@ -1,25 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { userServices } from './candidate.service'
+import { candidateServices } from './candidate.service'
 import catchAsync from '../../utils/catchAsync'
 import sendResponse from '../../utils/sendResponse'
 import httpStatus from 'http-status'
-import { getUserInfoFromToken } from '../../utils/getUserInfoFromToken'
-import { User } from './candidate.model'
+import { Candidate } from './candidate.model'
 import { TImageFile } from '../../interface/image.interface'
 
 const createUser = catchAsync(async (req, res) => {
   const payload = req.body
 
-  const result = await userServices.createUserIntoDb(payload)
+  const result = await candidateServices.createCandidateIntoDb(payload)
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'User registered successfully',
+    message: 'Candidate registered successfully',
     data: result,
   })
 })
 const getAllUser = catchAsync(async (req, res) => {
-  const result = await User.find()
+  const result = await Candidate.find()
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -27,20 +26,10 @@ const getAllUser = catchAsync(async (req, res) => {
     data: result,
   })
 })
-const getUserByEmail = catchAsync(async (req, res) => {
-  const token = req.headers.authorization
-  const { email } = getUserInfoFromToken(token as string)
-  const result = await userServices.getUserFromDB(email)
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'User retrieved successfully',
-    data: result,
-  })
-})
+
 const getUserById = catchAsync(async (req, res) => {
   const { id } = req.params
-  const result = await userServices.getUserByIdFromDB(id)
+  const result = await candidateServices.getCandidateByIdFromDB(id)
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -50,7 +39,7 @@ const getUserById = catchAsync(async (req, res) => {
 })
 const getSingleUser = catchAsync(async (req, res) => {
   const { email } = req.params
-  const result = await userServices.getUserFromDB(email)
+  const result = await candidateServices.getCandidateFromDB(email)
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -62,7 +51,7 @@ const updateUser = catchAsync(async (req, res) => {
   const { id } = req.params
   const payload = req.body
 
-  const result = await userServices.updateUserIntoDB(id, payload)
+  const result = await candidateServices.updateCandidateIntoDB(id, payload)
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -78,19 +67,10 @@ const updateUserAvatar = catchAsync(async (req, res) => {
   const payload = {
     avatar: filePath,
   }
-  const result = await userServices.updateUserIntoDB(id, payload)
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'User updated successfully',
-    data: result,
-  })
-})
-const updateUserRole = catchAsync(async (req, res) => {
-  const { id } = req.params
-  const userInfo = req.body
-  const result = await userServices.updateUserIntoDB(id, userInfo)
+  const result = await candidateServices.updateCandidateAvatarIntoDB(
+    id,
+    payload,
+  )
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -103,10 +83,8 @@ const updateUserRole = catchAsync(async (req, res) => {
 export const userControllers = {
   createUser,
   getAllUser,
-  getUserByEmail,
   getUserById,
   getSingleUser,
   updateUser,
-  updateUserRole,
   updateUserAvatar,
 }

@@ -1,50 +1,48 @@
-import { TUser, User } from './candidate.model'
+import { TCandidate, Candidate } from './candidate.model'
 
-const createUserIntoDb = async (userData: TUser) => {
-  const result = await User.create(userData)
+const createCandidateIntoDb = async (data: TCandidate) => {
+  const result = await Candidate.create(data)
   return result
 }
-const updateUserIntoDB = async (id: string, payload: Partial<TUser>) => {
-  const result = await User.findByIdAndUpdate(id, payload, {
+const updateCandidateIntoDB = async (
+  id: string,
+  payload: Partial<TCandidate>,
+) => {
+  const result = await Candidate.findByIdAndUpdate(id, payload, {
     new: true,
     runValidators: true,
   })
   return result
 }
-const updateUserAvatarIntoDB = async (id: string, payload: Partial<TUser>) => {
-  const result = await User.findByIdAndUpdate(id, payload, {
+const updateCandidateAvatarIntoDB = async (
+  id: string,
+  payload: Partial<TCandidate>,
+) => {
+  const result = await Candidate.findByIdAndUpdate(id, payload, {
     new: true,
     runValidators: true,
   })
   return result
 }
-const updateUserRoleIntoDB = async (id: string, payload: Partial<TUser>) => {
-  const result = await User.findByIdAndUpdate(id, payload, {
-    new: true,
-    runValidators: true,
-  })
-  return result
-}
-const getUserFromDB = async (email: string) => {
-  const result = await User.findOne({ email }).populate(
+const getCandidateFromDB = async (email: string) => {
+  const result = await Candidate.findOne({ email }).populate(
     'following followers',
     '_id name avatar',
   )
   return result
 }
-const getUserByIdFromDB = async (id: string) => {
-  const result = await User.findById(id)
+const getCandidateByIdFromDB = async (id: string) => {
+  const result = await Candidate.findById(id)
   if (!result) {
-    throw new Error('User not found!')
+    throw new Error('Candidate not found!')
   }
   return result
 }
 
-export const userServices = {
-  createUserIntoDb,
-  getUserFromDB,
-  getUserByIdFromDB,
-  updateUserIntoDB,
-  updateUserRoleIntoDB,
-  updateUserAvatarIntoDB,
+export const candidateServices = {
+  createCandidateIntoDb,
+  getCandidateFromDB,
+  getCandidateByIdFromDB,
+  updateCandidateIntoDB,
+  updateCandidateAvatarIntoDB,
 }
