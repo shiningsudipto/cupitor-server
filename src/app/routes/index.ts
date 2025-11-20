@@ -10,6 +10,7 @@ import { NotificationRoutes } from '../modules/notification/notification.route'
 import { CandidateExperienceRoutes } from '../modules/candidateExperience/candidateExperience.route'
 import { ResumeRoutes } from '../modules/resume/resume.route'
 import { ShortListRoutes } from '../modules/shortList/shortList.route'
+import { AdminRoutes } from '../modules/admin/admin.route'
 
 const router = Router()
 
@@ -21,6 +22,10 @@ const moduleRoutes = [
   {
     path: '/auth',
     route: AuthRoutes,
+  },
+  {
+    path: '/admin',
+    route: AdminRoutes,
   },
   {
     path: '/company',

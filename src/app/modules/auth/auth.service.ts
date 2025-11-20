@@ -111,7 +111,7 @@ const login = async (payload: { email: string; password: string }) => {
   if (!user) {
     user = await Admin.isAdminExistsByEmail(email)
     if (user) {
-      role = 'admin'
+      role = user.role // Will be 'super_admin', 'admin', or 'moderator'
       isPasswordMatched = await Admin.isPasswordMatched(password, user.password)
     }
   }

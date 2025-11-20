@@ -2,12 +2,14 @@ import { Model, Schema, model } from 'mongoose'
 import bcrypt from 'bcrypt'
 import config from '../../config'
 
+export type TAdminRole = 'super_admin' | 'admin' | 'moderator'
+
 export type TAdmin = {
   _id: string
   name: string
   email: string
   password: string
-  role: 'admin'
+  role: TAdminRole
   createdAt?: Date
   updatedAt?: Date
 }
@@ -27,8 +29,8 @@ const adminSchema = new Schema<TAdmin, AdminModel>(
     password: { type: String, required: true },
     role: {
       type: String,
-      enum: ['admin'],
-      default: 'admin',
+      enum: ['super_admin', 'admin', 'moderator'],
+      required: true,
     },
   },
   {

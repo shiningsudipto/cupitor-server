@@ -1,39 +1,61 @@
-# Admin System - Setup Guide
+# Multi-Role Admin System
 
 ## Overview
 
-The admin system allows you to create super admin users who can manage the entire job portal platform.
+The admin system now supports three distinct roles with different permission levels:
 
-## Creating the First Admin
+- **Super Admin** - Full system access, can create/update/delete all admins
+- **Admin** - Can view admins and manage platform content
+- **Moderator** - Limited administrative access
 
-### Step 1: Ensure Environment is Configured
+## Admin Roles
 
-Make sure your `.env.local` file has the database URL:
+### 1. Super Admin (`super_admin`)
 
-```env
-DATABASE_URL=mongodb://localhost:27017/cupitor
-BCRYPT_SALT_ROUNDS=10
-```
+- **Permissions:**
+  - Create new admins (super_admin, admin, moderator)
+  - Update any admin
+  - Delete any admin
+  - View all admins
+  - Full platform access
 
-### Step 2: Run the Seed Script
+### 2. Admin (`admin`)
+
+- **Permissions:**
+  - View all admins
+  - Manage platform content
+  - Cannot create/update/delete admins
+
+### 3. Moderator (`moderator`)
+
+- **Permissions:**
+  - Limited content moderation
+  - Cannot manage admins
+  - Cannot access sensitive data
+
+---
+
+## Setup: Creating the First Super Admin
+
+### Step 1: Run the Seed Script
 
 ```bash
 npm run seed:admin
 ```
 
-This will create an admin with:
+This creates a super admin with:
 
-- **Email:** `admin@cupitor.com`
-- **Password:** `Admin@123!`
-- **Role:** `admin`
+- **Email:** `superadmin@cupitor.com`
+- **Password:** `SuperAdmin@123!`
+- **Role:** `super_admin`
 
-### Step 3: Login as Admin
+### Step 2: Login as Super Admin
 
 ```bash
 POST /auth/login
 {
-  "email": "admin@cupitor.com",
-  "password": "Admin@123!"
+  "email": "superadmin@cupitor.com",
+  "password": "SuperAdmin@123!"
 }
 ```
 
@@ -48,106 +70,336 @@ POST /auth/login
     "user": {
       "_id": "...",
       "name": "Super Admin",
-      "email": "admin@cupitor.com",
-      "role": "admin"
+      "email": "superadmin@cupitor.com",
+      "role": "super_admin"
     },
     "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "role": "super_admin"
+  }
+}
+```
+
+---
+
+## Admin Management API
+
+**Base Path:** `/admin`
+
+All admin routes require authentication. Use the access token in the Authorization header:
+
+```
+Authorization: Bearer <access-token>
+```
+
+### Create Admin (Super Admin Only)
+
+**Endpoint:** `POST /admin`
+**Required Role:** `super_admin`
+
+**Request Body:**
+
+```json
+{
+  "name": "John Admin",
+  "email": "john@cupitor.com",
+  "password": "SecurePass123!",
+  "role": "admin"
+}
+```
+
+**Role Options:**
+
+- `"super_admin"` - Creates another super admin
+- `"admin"` - Creates a regular admin
+- `"moderator"` - Creates a moderator
+
+**Response:**
+
+```json
+{
+  "statusCode": 201,
+  "success": true,
+  "message": "Admin created successfully",
+  "data": {
+    "_id": "...",
+    "name": "John Admin",
+    "email": "john@cupitor.com",
+    "role": "admin",
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+}
+```
+
+---
+
+### Get All Admins
+
+**Endpoint:** `GET /admin`
+**Required Role:** `super_admin` or `admin`
+
+**Response:**
+
+```json
+{
+  "statusCode": 200,
+  "success": true,
+  "message": "Admins retrieved successfully",
+  "data": [
+    {
+      "_id": "...",
+      "name": "Super Admin",
+      "email": "superadmin@cupitor.com",
+      "role": "super_admin",
+      "createdAt": "...",
+      "updatedAt": "..."
+    },
+    {
+      "_id": "...",
+      "name": "John Admin",
+      "email": "john@cupitor.com",
+      "role": "admin",
+      "createdAt": "...",
+      "updatedAt": "..."
+    }
+  ]
+}
+```
+
+---
+
+### Get Admin by ID
+
+**Endpoint:** `GET /admin/:id`
+**Required Role:** `super_admin` or `admin`
+
+**Response:**
+
+```json
+{
+  "statusCode": 200,
+  "success": true,
+  "message": "Admin retrieved successfully",
+  "data": {
+    "_id": "...",
+    "name": "John Admin",
+    "email": "john@cupitor.com",
+    "role": "admin",
+    "createdAt": "...",
+    "updatedAt": "..."
+  }
+}
+```
+
+---
+
+### Update Admin (Super Admin Only)
+
+**Endpoint:** `PUT /admin/:id`
+**Required Role:** `super_admin`
+
+**Request Body:**
+
+```json
+{
+  "name": "John Updated",
+  "role": "moderator"
+}
+```
+
+**Response:**
+
+```json
+{
+  "statusCode": 200,
+  "success": true,
+  "message": "Admin updated successfully",
+  "data": {
+    "_id": "...",
+    "name": "John Updated",
+    "email": "john@cupitor.com",
+    "role": "moderator",
+    "createdAt": "...",
+    "updatedAt": "..."
+  }
+}
+```
+
+---
+
+### Delete Admin (Super Admin Only)
+
+**Endpoint:** `DELETE /admin/:id`
+**Required Role:** `super_admin`
+
+**Response:**
+
+```json
+{
+  "statusCode": 200,
+  "success": true,
+  "message": "Admin deleted successfully",
+  "data": {
+    "_id": "...",
+    "name": "John Admin",
+    "email": "john@cupitor.com",
     "role": "admin"
   }
 }
 ```
 
-### Step 4: Change Default Password
-
-**IMPORTANT:** Change the default password immediately after first login!
-
-You can update the admin password by:
-
-1. Creating an admin update endpoint
-2. Or manually updating in the database
-
 ---
 
-## Admin Model Structure
+## Permission Matrix
 
-```typescript
-{
-  _id: ObjectId
-  name: string
-  email: string(unique)
-  password: string(hashed)
-  role: 'admin'
-  createdAt: Date
-  updatedAt: Date
-}
-```
-
----
-
-## Features
-
-✅ **Password Hashing** - Bcrypt with configurable salt rounds
-✅ **Unique Email** - Prevents duplicate admin accounts
-✅ **Unified Login** - Same login endpoint as candidates and companies
-✅ **JWT Tokens** - Secure authentication with role-based access
-✅ **Password Hidden** - Passwords never exposed in API responses
+| Action       | Super Admin | Admin | Moderator |
+| ------------ | ----------- | ----- | --------- |
+| Create Admin | ✅          | ❌    | ❌        |
+| View Admins  | ✅          | ✅    | ❌        |
+| Update Admin | ✅          | ❌    | ❌        |
+| Delete Admin | ✅          | ❌    | ❌        |
+| Login        | ✅          | ✅    | ✅        |
 
 ---
 
 ## Security Best Practices
 
-1. **Change Default Password** - Immediately after first login
-2. **Use Strong Passwords** - Minimum 12 characters with mixed case, numbers, symbols
-3. **Limit Admin Accounts** - Only create admins when necessary
-4. **Monitor Admin Activity** - Log all admin actions
-5. **Use Environment Variables** - Never hardcode credentials
+1. **Protect Super Admin Account**
+
+   - Change default password immediately
+   - Use strong, unique password
+   - Enable 2FA (to be implemented)
+
+2. **Limit Super Admin Accounts**
+
+   - Only create super admins when absolutely necessary
+   - Regularly audit super admin accounts
+
+3. **Role-Based Access**
+
+   - Assign minimum required role
+   - Regularly review admin permissions
+   - Remove inactive admin accounts
+
+4. **Password Policy**
+
+   - Minimum 12 characters
+   - Mix of uppercase, lowercase, numbers, symbols
+   - No common passwords
+
+5. **Audit Logging**
+   - Log all admin actions (to be implemented)
+   - Monitor suspicious activity
+   - Regular security reviews
 
 ---
 
-## Customizing the Seed Script
+## Testing Examples
 
-Edit `src/scripts/seedAdmin.ts` to change default values:
+### 1. Create Super Admin
 
-```typescript
-const ADMIN_EMAIL = 'your-email@example.com'
-const ADMIN_PASSWORD = 'YourSecurePassword123!'
-const ADMIN_NAME = 'Your Name'
+```bash
+npm run seed:admin
+```
+
+### 2. Login as Super Admin
+
+```bash
+POST /auth/login
+{
+  "email": "superadmin@cupitor.com",
+  "password": "SuperAdmin@123!"
+}
+# Save the accessToken
+```
+
+### 3. Create Regular Admin
+
+```bash
+POST /admin
+Headers: Authorization: Bearer <super-admin-token>
+{
+  "name": "Regular Admin",
+  "email": "admin@cupitor.com",
+  "password": "Admin@123!",
+  "role": "admin"
+}
+```
+
+### 4. Create Moderator
+
+```bash
+POST /admin
+Headers: Authorization: Bearer <super-admin-token>
+{
+  "name": "Moderator User",
+  "email": "moderator@cupitor.com",
+  "password": "Moderator@123!",
+  "role": "moderator"
+}
+```
+
+### 5. Login as Regular Admin
+
+```bash
+POST /auth/login
+{
+  "email": "admin@cupitor.com",
+  "password": "Admin@123!"
+}
+# Response will have role: "admin"
+```
+
+### 6. View All Admins (as Admin)
+
+```bash
+GET /admin
+Headers: Authorization: Bearer <admin-token>
+# Should work - admins can view other admins
+```
+
+### 7. Try to Create Admin (as Regular Admin)
+
+```bash
+POST /admin
+Headers: Authorization: Bearer <admin-token>
+{
+  "name": "Test",
+  "email": "test@cupitor.com",
+  "password": "Test@123!",
+  "role": "admin"
+}
+# Should fail - only super_admin can create admins
 ```
 
 ---
 
 ## Troubleshooting
 
-### Admin Already Exists
+### "Unauthorized" Error
 
-If you see "Admin already exists", the admin has been created. Use the login endpoint.
+- Check if token is valid and not expired
+- Verify you're using the correct role for the endpoint
+- Ensure Authorization header is properly formatted
 
-### Database Connection Error
+### "Admin already exists"
 
-Check your `DATABASE_URL` in `.env.local` and ensure MongoDB is running.
+- Email must be unique
+- Check if admin with that email already exists
 
-### Permission Denied
+### Cannot Create Admin
 
-Ensure you have write access to the database.
+- Only super_admin can create new admins
+- Verify your token has super_admin role
 
 ---
 
 ## Next Steps
 
-1. ✅ Create first admin using seed script
+1. ✅ Create super admin using seed script
 2. ✅ Login and get access token
-3. 🔄 Create admin management endpoints (CRUD)
-4. 🔄 Add role-based middleware for protected routes
-5. 🔄 Implement admin-only features (user management, analytics, etc.)
-
----
-
-## Admin Management Endpoints (To Be Implemented)
-
-Future endpoints for admin management:
-
-- `GET /admin` - List all admins (admin only)
-- `POST /admin` - Create new admin (admin only)
-- `PUT /admin/:id` - Update admin (admin only)
-- `DELETE /admin/:id` - Delete admin (admin only)
-- `PUT /admin/:id/password` - Change password
+3. ✅ Create additional admins with different roles
+4. 🔄 Implement password change endpoint
+5. 🔄 Add 2FA authentication
+6. 🔄 Implement audit logging
+7. 🔄 Add admin activity dashboard
