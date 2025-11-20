@@ -4,6 +4,7 @@ const createCandidateIntoDb = async (data: TCandidate) => {
   const result = await Candidate.create(data)
   return result
 }
+
 const updateCandidateIntoDB = async (
   id: string,
   payload: Partial<TCandidate>,
@@ -12,8 +13,12 @@ const updateCandidateIntoDB = async (
     new: true,
     runValidators: true,
   })
+  if (!result) {
+    throw new Error('Candidate not found!')
+  }
   return result
 }
+
 const updateCandidateAvatarIntoDB = async (
   id: string,
   payload: Partial<TCandidate>,
@@ -22,17 +27,30 @@ const updateCandidateAvatarIntoDB = async (
     new: true,
     runValidators: true,
   })
+  if (!result) {
+    throw new Error('Candidate not found!')
+  }
   return result
 }
+
 const getCandidateFromDB = async (email: string) => {
-  const result = await Candidate.findOne({ email }).populate(
-    'following followers',
-    '_id name avatar',
-  )
+  const result = await Candidate.findOne({ email })
+  if (!result) {
+    throw new Error('Candidate not found!')
+  }
   return result
 }
+
 const getCandidateByIdFromDB = async (id: string) => {
   const result = await Candidate.findById(id)
+  if (!result) {
+    throw new Error('Candidate not found!')
+  }
+  return result
+}
+
+const deleteCandidateFromDB = async (id: string) => {
+  const result = await Candidate.findByIdAndDelete(id)
   if (!result) {
     throw new Error('Candidate not found!')
   }
@@ -45,4 +63,5 @@ export const candidateServices = {
   getCandidateByIdFromDB,
   updateCandidateIntoDB,
   updateCandidateAvatarIntoDB,
+  deleteCandidateFromDB,
 }

@@ -10,13 +10,13 @@ export type TCandidate = {
   password: string
   phone: string
   role: 'candidate'
-  city: string
+  city?: string
   address?: string
   skills?: string[]
-  education: string
+  education?: string
   yearsOfExperience?: string
   github?: string
-  linkedin: string
+  linkedin?: string
 }
 
 export const USER_ROLE = {
@@ -29,6 +29,7 @@ export const USER_ROLE = {
 export interface UserModel extends Model<TCandidate> {
   //instance methods for checking if the user exist
   isUserExistsByPhone(phone: string): Promise<TCandidate>
+  isUserExistsByEmail(email: string): Promise<TCandidate>
   //instance methods for checking if passwords are matched
   isPasswordMatched(
     plainTextPassword: string,
@@ -39,7 +40,7 @@ export interface UserModel extends Model<TCandidate> {
 const candidateSchema = new Schema<TCandidate, UserModel>(
   {
     name: { type: String, required: true },
-    email: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     avatar: { type: String },
     phone: { type: String, required: true, unique: true },
@@ -50,11 +51,11 @@ const candidateSchema = new Schema<TCandidate, UserModel>(
     },
     address: { type: String, required: false },
     city: { type: String, required: false },
-    skills: { type: Array, required: false },
+    skills: { type: [String], required: false },
     education: { type: String, required: false },
     yearsOfExperience: { type: String, required: false },
     github: { type: String, required: false },
-    linkedin: { type: String, required: true },
+    linkedin: { type: String, required: false },
   },
   {
     timestamps: true,
@@ -86,6 +87,11 @@ candidateSchema.methods.toJSON = function () {
 // Static method to find user by phone
 candidateSchema.statics.isUserExistsByPhone = async function (phone: string) {
   return await this.findOne({ phone })
+}
+
+// Static method to find user by email
+candidateSchema.statics.isUserExistsByEmail = async function (email: string) {
+  return await this.findOne({ email })
 }
 
 candidateSchema.statics.isPasswordMatched = async function (

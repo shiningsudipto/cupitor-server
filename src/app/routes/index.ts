@@ -1,16 +1,21 @@
 import { Router } from 'express'
 import { AuthRoutes } from '../modules/auth/auth.route'
-import { ProductRoutes } from '../modules/product/product.route'
-import { PackageRoutes } from '../modules/package/package.route'
-import { CategoryRoutes } from '../modules/category/category.route'
-import { OrderRoutes } from '../modules/order/order.routes'
 import { UserRoutes } from '../modules/candidate/candidate.route'
+import { CompanyRoutes } from '../modules/company/company.route'
+import { JobRoutes } from '../modules/job/job.route'
+import { ApplicationRoutes } from '../modules/application/application.route'
+import { SavedJobRoutes } from '../modules/savedJob/savedJob.route'
+import { ReviewRoutes } from '../modules/review/review.route'
+import { NotificationRoutes } from '../modules/notification/notification.route'
+import { CandidateExperienceRoutes } from '../modules/candidateExperience/candidateExperience.route'
+import { ResumeRoutes } from '../modules/resume/resume.route'
+import { ShortListRoutes } from '../modules/shortList/shortList.route'
 
 const router = Router()
 
 const moduleRoutes = [
   {
-    path: '/',
+    path: '/candidate',
     route: UserRoutes,
   },
   {
@@ -18,20 +23,40 @@ const moduleRoutes = [
     route: AuthRoutes,
   },
   {
-    path: '/product',
-    route: ProductRoutes,
+    path: '/company',
+    route: CompanyRoutes,
   },
   {
-    path: '/package',
-    route: PackageRoutes,
+    path: '/job',
+    route: JobRoutes,
   },
   {
-    path: '/category',
-    route: CategoryRoutes,
+    path: '/application',
+    route: ApplicationRoutes,
   },
   {
-    path: '/order',
-    route: OrderRoutes,
+    path: '/savedJob',
+    route: SavedJobRoutes,
+  },
+  {
+    path: '/review',
+    route: ReviewRoutes,
+  },
+  {
+    path: '/notification',
+    route: NotificationRoutes,
+  },
+  {
+    path: '/candidateExperience',
+    route: CandidateExperienceRoutes,
+  },
+  {
+    path: '/resume',
+    route: ResumeRoutes,
+  },
+  {
+    path: '/shortList',
+    route: ShortListRoutes,
   },
 ]
 
