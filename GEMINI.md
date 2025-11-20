@@ -7,6 +7,7 @@
 - Create the types
 - Create complete Get all, Get by id, Create, Update, Delete methods for all models
 - Update EXAMPLE.md file whenever you create a new model
+- Do all actions in moduler pattern.
 
 ### Folder Structure
 
@@ -16,11 +17,10 @@
 - Create all routes for the application into routes folder
 - Create all types for the application into types folder
 - Import all routes into src/app/routes/index.ts
-- Do it in moduler pattern.
 
 ### Diagram
 
-- Follow cupitor_db_diagram.pdf or index.ts for the database/model design
+- Follow cupitor_db_diagram.pdf or index.ts for the database or model design
 
 ### Authentication
 
