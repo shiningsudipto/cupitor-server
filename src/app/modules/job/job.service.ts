@@ -1,4 +1,4 @@
-import { JobModel, TJob } from './job.model'
+import { JobModel, JobTypeModel, TJob } from './job.model'
 
 const createJobIntoDB = async (data: TJob) => {
   const result = await JobModel.create(data)
@@ -50,6 +50,16 @@ const deleteJobFromDB = async (id: string) => {
   return result
 }
 
+const createJobTypeIntoDB = async (data: { label: string }) => {
+  const result = await JobTypeModel.create(data)
+  return result
+}
+
+const getAllJobTypesFromDB = async () => {
+  const result = await JobTypeModel.find()
+  return result
+}
+
 export const jobServices = {
   createJobIntoDB,
   getAllJobsFromDB,
@@ -57,4 +67,6 @@ export const jobServices = {
   getJobsByCompanyFromDB,
   updateJobIntoDB,
   deleteJobFromDB,
+  createJobTypeIntoDB,
+  getAllJobTypesFromDB,
 }

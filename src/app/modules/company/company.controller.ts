@@ -87,6 +87,26 @@ const deleteCompany = catchAsync(async (req, res) => {
   })
 })
 
+const createCompanyType = catchAsync(async (req, res) => {
+  const result = await companyServices.createCompanyTypeIntoDB(req.body)
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Company type created successfully',
+    data: result,
+  })
+})
+
+const getAllCompanyTypes = catchAsync(async (req, res) => {
+  const result = await companyServices.getAllCompanyTypesFromDB()
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Company types retrieved successfully',
+    data: result,
+  })
+})
+
 export const companyControllers = {
   create,
   getAll,
@@ -94,4 +114,6 @@ export const companyControllers = {
   getByUsername,
   update,
   deleteCompany,
+  createCompanyType,
+  getAllCompanyTypes,
 }

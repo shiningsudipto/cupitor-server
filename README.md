@@ -12,6 +12,7 @@ A comprehensive RESTful API backend for a job portal platform built with Node.js
 - **Saved Jobs** - Bookmark jobs for later review
 - **Experience Tracking** - Manage work history and experience
 - **Resume Management** - Upload and manage multiple resumes
+- **Resume ATS Checker** - AI-powered resume analysis and optimization
 - **Company Reviews** - Rate and review companies
 - **Notifications** - Real-time updates on application status
 

@@ -71,6 +71,26 @@ const deleteJob = catchAsync(async (req, res) => {
   })
 })
 
+const createJobType = catchAsync(async (req, res) => {
+  const result = await jobServices.createJobTypeIntoDB(req.body)
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: 'Job type created successfully',
+    data: result,
+  })
+})
+
+const getAllJobTypes = catchAsync(async (req, res) => {
+  const result = await jobServices.getAllJobTypesFromDB()
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Job types retrieved successfully',
+    data: result,
+  })
+})
+
 export const jobControllers = {
   createJob,
   getAllJobs,
@@ -78,4 +98,6 @@ export const jobControllers = {
   getJobsByCompany,
   updateJob,
   deleteJob,
+  createJobType,
+  getAllJobTypes,
 }

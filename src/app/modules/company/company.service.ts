@@ -1,4 +1,4 @@
-import { Company, TCompany } from './company.model'
+import { Company, CompanyType, TCompany } from './company.model'
 
 const createCompanyIntoDb = async (data: TCompany) => {
   const result = await Company.create(data)
@@ -37,6 +37,16 @@ const getCompanyByIdFromDB = async (id: string) => {
   return result
 }
 
+const createCompanyTypeIntoDB = async (data: { label: string }) => {
+  const result = await CompanyType.create(data)
+  return result
+}
+
+const getAllCompanyTypesFromDB = async () => {
+  const result = await CompanyType.find()
+  return result
+}
+
 export const companyServices = {
   createCompanyIntoDb,
   getCompanyFromDB,
@@ -44,4 +54,6 @@ export const companyServices = {
   updateCompanyIntoDB,
   updateCompanyLogoIntoDB,
   deleteCompanyFromDB,
+  createCompanyTypeIntoDB,
+  getAllCompanyTypesFromDB,
 }

@@ -10,11 +10,14 @@ router.get('/', companyControllers.getAll)
 router.get('/:username', companyControllers.getByUsername)
 router.get('/:id', companyControllers.getById)
 router.delete('/:id', companyControllers.deleteCompany)
-router.put(
-  '/update/:id',
+router.post(
+  '/register',
   multerUpload.fields([{ name: 'logo' }]),
   parseBody,
-  companyControllers.update,
+  companyControllers.create,
 )
+
+router.post('/company-type', companyControllers.createCompanyType)
+router.get('/company-type', companyControllers.getAllCompanyTypes)
 
 export const CompanyRoutes = router

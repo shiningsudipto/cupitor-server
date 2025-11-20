@@ -11,6 +11,7 @@ import { CandidateExperienceRoutes } from '../modules/candidateExperience/candid
 import { ResumeRoutes } from '../modules/resume/resume.route'
 import { ShortListRoutes } from '../modules/shortList/shortList.route'
 import { AdminRoutes } from '../modules/admin/admin.route'
+import { ResumeAnalysisRoutes } from '../modules/resumeAnalysis/resumeAnalysis.route'
 
 const router = Router()
 
@@ -62,6 +63,10 @@ const moduleRoutes = [
   {
     path: '/shortList',
     route: ShortListRoutes,
+  },
+  {
+    path: '/resumeAnalysis',
+    route: ResumeAnalysisRoutes,
   },
 ]
 

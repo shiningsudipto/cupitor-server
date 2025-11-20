@@ -16,6 +16,7 @@ Complete API documentation with ready-to-use JSON examples for testing all POST 
 8. [Candidate Experience Routes](#8-candidate-experience-routes)
 9. [Resume Routes](#9-resume-routes)
 10. [ShortList Routes](#10-shortlist-routes)
+11. [Resume Analysis Routes](#11-resume-analysis-routes)
 
 ---
 
@@ -1396,6 +1397,290 @@ All API responses follow this format:
   }
 }
 ```
+
+---
+
+## 11. Resume Analysis Routes
+
+**Base Path:** `/resumeAnalysis`
+
+### All Routes
+
+```
+POST   /resumeAnalysis/analyze           - Analyze resume (general ATS check)
+POST   /resumeAnalysis/analyze-for-job   - Analyze resume for specific job
+GET    /resumeAnalysis                   - Get all analyses
+GET    /resumeAnalysis/:id               - Get analysis by ID
+GET    /resumeAnalysis/candidate/:candidateId - Get candidate's analyses
+DELETE /resumeAnalysis/:id               - Delete analysis
+```
+
+### POST - Analyze Resume (General ATS Check)
+
+**Endpoint:** `POST /resumeAnalysis/analyze`
+
+**Content-Type:** `multipart/form-data`
+
+**Form Data:**
+
+- `candidateId`: "507f1f77bcf86cd799439013"
+- `resumeId`: "507f1f77bcf86cd799439020" (optional)
+- `resume`: [PDF file upload]
+
+**Description:** Upload a resume PDF and get comprehensive ATS (Applicant Tracking System) analysis including:
+
+- ATS compatibility score
+- Keyword analysis
+- Formatting evaluation
+- Strengths and weaknesses
+- Improvement suggestions
+- Section detection
+
+**Response Example:**
+
+```json
+{
+  "statusCode": 200,
+  "success": true,
+  "message": "Resume analyzed successfully",
+  "data": {
+    "_id": "507f1f77bcf86cd799439025",
+    "candidateId": "507f1f77bcf86cd799439013",
+    "resumeUrl": "https://res.cloudinary.com/.../resume.pdf",
+    "analysisType": "general",
+    "atsScore": 85,
+    "keywordScore": 78,
+    "formattingScore": 90,
+    "overallScore": 84,
+    "strengths": [
+      "Clear and professional formatting",
+      "Strong technical skills section",
+      "Quantifiable achievements"
+    ],
+    "weaknesses": [
+      "Missing professional summary",
+      "Limited use of action verbs",
+      "Could include more industry keywords"
+    ],
+    "suggestions": [
+      "Add a professional summary at the top",
+      "Use more action verbs like 'developed', 'implemented', 'led'",
+      "Include relevant certifications",
+      "Add links to portfolio or GitHub projects",
+      "Optimize for ATS by using standard section headings"
+    ],
+    "matchedKeywords": [
+      "JavaScript",
+      "React",
+      "Node.js",
+      "MongoDB",
+      "TypeScript"
+    ],
+    "missingKeywords": ["Docker", "CI/CD", "Agile", "Testing"],
+    "sections": {
+      "hasContactInfo": true,
+      "hasExperience": true,
+      "hasEducation": true,
+      "hasSkills": true,
+      "hasSummary": false
+    },
+    "aiAnalysis": "This resume demonstrates strong technical capabilities...",
+    "createdAt": "2024-06-15T10:30:00.000Z"
+  }
+}
+```
+
+---
+
+### POST - Analyze Resume for Job
+
+**Endpoint:** `POST /resumeAnalysis/analyze-for-job`
+
+**Content-Type:** `multipart/form-data`
+
+**Form Data:**
+
+- `candidateId`: "507f1f77bcf86cd799439013"
+- `jobId`: "507f1f77bcf86cd799439015"
+- `resumeId`: "507f1f77bcf86cd799439020" (optional)
+- `resume`: [PDF file upload]
+
+**Description:** Analyze how well a resume matches a specific job posting. Provides job-specific keyword matching, gap analysis, and tailored suggestions.
+
+**Response Example:**
+
+```json
+{
+  "statusCode": 200,
+  "success": true,
+  "message": "Resume analyzed for job successfully",
+  "data": {
+    "_id": "507f1f77bcf86cd799439026",
+    "candidateId": "507f1f77bcf86cd799439013",
+    "jobId": "507f1f77bcf86cd799439015",
+    "resumeUrl": "https://res.cloudinary.com/.../resume.pdf",
+    "analysisType": "job-specific",
+    "atsScore": 85,
+    "keywordScore": 72,
+    "formattingScore": 90,
+    "overallScore": 79,
+    "strengths": [
+      "Strong match with required React and Node.js skills",
+      "Relevant experience in similar roles",
+      "Good formatting for ATS systems"
+    ],
+    "weaknesses": [
+      "Missing Docker experience mentioned in job requirements",
+      "Limited AWS cloud experience",
+      "No mention of CI/CD pipelines"
+    ],
+    "suggestions": [
+      "Highlight any Docker or containerization experience",
+      "Add AWS or cloud platform projects if available",
+      "Include CI/CD pipeline experience or willingness to learn",
+      "Emphasize team collaboration and agile methodologies",
+      "Tailor professional summary to match job description"
+    ],
+    "matchedKeywords": [
+      "React",
+      "Node.js",
+      "TypeScript",
+      "MongoDB",
+      "REST API"
+    ],
+    "missingKeywords": [
+      "Docker",
+      "AWS",
+      "CI/CD",
+      "Kubernetes",
+      "Microservices"
+    ],
+    "sections": {
+      "hasContactInfo": true,
+      "hasExperience": true,
+      "hasEducation": true,
+      "hasSkills": true,
+      "hasSummary": false
+    },
+    "aiAnalysis": "The resume shows a 72% match with the job requirements for Senior Full Stack Developer...",
+    "createdAt": "2024-06-15T10:35:00.000Z"
+  }
+}
+```
+
+---
+
+### GET - Get All Analyses
+
+**Endpoint:** `GET /resumeAnalysis`
+
+**Description:** Retrieve all resume analyses (useful for admins)
+
+---
+
+### GET - Get Analysis by ID
+
+**Endpoint:** `GET /resumeAnalysis/:id`
+
+**Example:** `GET /resumeAnalysis/507f1f77bcf86cd799439025`
+
+**Description:** Retrieve a specific resume analysis by its ID
+
+---
+
+### GET - Get Candidate's Analyses
+
+**Endpoint:** `GET /resumeAnalysis/candidate/:candidateId`
+
+**Example:** `GET /resumeAnalysis/candidate/507f1f77bcf86cd799439013`
+
+**Description:** Get all resume analyses for a specific candidate
+
+**Response Example:**
+
+```json
+{
+  "statusCode": 200,
+  "success": true,
+  "message": "Candidate resume analyses retrieved successfully",
+  "data": [
+    {
+      "_id": "507f1f77bcf86cd799439025",
+      "analysisType": "general",
+      "overallScore": 84,
+      "createdAt": "2024-06-15T10:30:00.000Z"
+    },
+    {
+      "_id": "507f1f77bcf86cd799439026",
+      "analysisType": "job-specific",
+      "jobId": {
+        "_id": "507f1f77bcf86cd799439015",
+        "title": "Senior Full Stack Developer"
+      },
+      "overallScore": 79,
+      "createdAt": "2024-06-15T10:35:00.000Z"
+    }
+  ]
+}
+```
+
+---
+
+### DELETE - Delete Analysis
+
+**Endpoint:** `DELETE /resumeAnalysis/:id`
+
+**Example:** `DELETE /resumeAnalysis/507f1f77bcf86cd799439025`
+
+**Description:** Delete a resume analysis record
+
+---
+
+### Resume Analysis Workflow Example
+
+**Step 1: Upload and Analyze Resume (General Check)**
+
+```
+POST /resumeAnalysis/analyze
+Content-Type: multipart/form-data
+
+Form Data:
+- candidateId: "507f1f77bcf86cd799439013"
+- resume: [upload resume.pdf]
+```
+
+**Step 2: Analyze Resume for Specific Job**
+
+```
+POST /resumeAnalysis/analyze-for-job
+Content-Type: multipart/form-data
+
+Form Data:
+- candidateId: "507f1f77bcf86cd799439013"
+- jobId: "507f1f77bcf86cd799439015"
+- resume: [upload resume.pdf]
+```
+
+**Step 3: Review Analysis Results**
+
+```
+GET /resumeAnalysis/candidate/507f1f77bcf86cd799439013
+```
+
+---
+
+### Important Notes for Resume Analysis
+
+- **PDF Format Required**: Only PDF resumes are supported
+- **AI-Powered**: Uses Google Gemini AI for intelligent analysis
+- **Scoring System**: All scores are on a 0-100 scale
+- **Analysis Types**:
+  - `general`: Overall ATS compatibility check
+  - `job-specific`: Tailored analysis against job requirements
+- **Processing Time**: Analysis may take 5-15 seconds depending on resume length
+- **File Size**: Recommended maximum 5MB per PDF
+
+---
 
 ---
 
