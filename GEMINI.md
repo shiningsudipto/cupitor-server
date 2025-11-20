@@ -6,6 +6,7 @@
 - Create the routes
 - Create the types
 - Create complete Get all, Get by id, Create, Update, Delete methods for all models
+- Update EXAMPLE.md file whenever you create a new model
 
 ### Folder Structure
 

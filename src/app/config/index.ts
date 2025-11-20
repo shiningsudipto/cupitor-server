@@ -1,7 +1,7 @@
 import dotenv from 'dotenv'
 import path from 'path'
 
-dotenv.config({ path: path.join((process.cwd(), '.env')) })
+dotenv.config({ path: path.join((process.cwd(), '.env.local')) })
 
 export default {
   port: process.env.PORT,
@@ -13,6 +13,4 @@ export default {
   cloudinary_cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
   cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
-  SMS_API_KEY: process.env.SMS_API_KEY,
-  SMS_SENDER_ID: process.env.SMS_SENDER_ID,
 }

@@ -11,12 +11,8 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(
   cors({
-    origin: [
-      'https://bhojjo.com',
-      'https://bhojjo.netlify.app',
-      'http://localhost:5173',
-    ],
-    credentials: true,
+    origin: '*',
+    credentials: false,
   }),
 )
 
@@ -26,7 +22,7 @@ app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')))
 app.use('/api', router)
 
 app.get('/', (req: Request, res: Response) => {
-  res.send('Bhojjo Running!')
+  res.send('Cupitor Running!')
 })
 app.use(globalErrorHandler)
 
