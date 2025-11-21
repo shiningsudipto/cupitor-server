@@ -1,6 +1,7 @@
 import express from 'express'
 import { multerUpload } from '../../config/multer.config'
 import { resumeAnalysisControllers } from './resumeAnalysis.controller'
+import { parseBody } from '../../middlewares/bodyParser'
 
 const router = express.Router()
 
@@ -14,7 +15,7 @@ router.post(
 // Analyze resume for specific job
 router.post(
   '/analyze-for-job',
-  multerUpload.fields([{ name: 'resume' }]),
+  parseBody,
   resumeAnalysisControllers.analyzeResumeForJob,
 )
 
@@ -32,5 +33,8 @@ router.get(
 
 // Delete analysis
 router.delete('/:id', resumeAnalysisControllers.deleteAnalysis)
+
+// Update analysis title
+router.put('/:id/title', parseBody, resumeAnalysisControllers.updateTitle)
 
 export const ResumeAnalysisRoutes = router

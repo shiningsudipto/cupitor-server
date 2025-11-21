@@ -30,6 +30,10 @@ const resumeAnalysisSchema = new Schema<TResumeAnalysis>(
       required: true,
       default: 'general',
     },
+    title: {
+      type: String,
+      required: true,
+    },
     atsScore: {
       type: Number,
       required: true,

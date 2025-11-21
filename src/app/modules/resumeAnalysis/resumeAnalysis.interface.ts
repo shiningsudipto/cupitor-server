@@ -8,6 +8,7 @@ export interface TResumeAnalysis {
   resumeUrl: string
   parsedContent: string
   analysisType: 'general' | 'job-specific'
+  title: string
   atsScore: number
   keywordScore: number
   formattingScore: number

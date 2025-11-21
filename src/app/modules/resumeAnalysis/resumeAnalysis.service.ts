@@ -69,6 +69,7 @@ const analyzeResumeFromPDF = async (
       resumeUrl, // Store the URL for reference
       parsedContent,
       analysisType: 'general' as const,
+      title: `Resume Analysis - ${new Date().toLocaleDateString()}`,
       ...aiResult,
     }
 
@@ -122,6 +123,7 @@ const analyzeResumeForJobPosting = async (
       resumeUrl, // Store the URL for reference
       parsedContent,
       analysisType: 'job-specific' as const,
+      title: `Job Analysis: ${job.title}`,
       ...aiResult,
     }
 
@@ -174,6 +176,7 @@ const analyzeResumeForJobFromExistingAnalysis = async (
       resumeUrl: existingAnalysis.resumeUrl,
       parsedContent: existingAnalysis.parsedContent,
       analysisType: 'job-specific' as const,
+      title: `Job Analysis: ${job.title}`,
       ...aiResult,
     }
 
@@ -236,6 +239,24 @@ const deleteAnalysis = async (id: string): Promise<TResumeAnalysis | null> => {
   return result
 }
 
+/**
+ * Update analysis title
+ * @param id - Analysis ID
+ * @param title - New title
+ * @returns Updated analysis document
+ */
+const updateAnalysisTitle = async (
+  id: string,
+  title: string,
+): Promise<TResumeAnalysis | null> => {
+  const result = await ResumeAnalysis.findByIdAndUpdate(
+    id,
+    { title },
+    { new: true },
+  )
+  return result
+}
+
 export const resumeAnalysisServices = {
   analyzeResumeFromPDF,
   analyzeResumeForJobPosting,
@@ -244,4 +265,5 @@ export const resumeAnalysisServices = {
   getCandidateAnalyses,
   getAllAnalyses,
   deleteAnalysis,
+  updateAnalysisTitle,
 }

@@ -50,23 +50,26 @@ const analyzeResume = catchAsync(async (req, res) => {
 const analyzeResumeForJob = catchAsync(async (req, res) => {
   const { candidateId, jobId, resumeAnalysisId } = req.body
 
-  // If resumeAnalysisId is provided, use existing analysis
-  if (resumeAnalysisId) {
-    const result =
-      await resumeAnalysisServices.analyzeResumeForJobFromExistingAnalysis(
-        candidateId,
-        jobId,
-        resumeAnalysisId,
-      )
-
-    sendResponse(res, {
-      statusCode: httpStatus.OK,
-      success: true,
-      message: 'Resume analyzed for job successfully',
-      data: result,
+  if (!resumeAnalysisId) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      success: false,
+      message: 'resumeAnalysisId is required',
     })
-    return
   }
+
+  const result =
+    await resumeAnalysisServices.analyzeResumeForJobFromExistingAnalysis(
+      candidateId,
+      jobId,
+      resumeAnalysisId,
+    )
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Resume analyzed for job successfully',
+    data: result,
+  })
 })
 
 /**
@@ -146,6 +149,38 @@ const deleteAnalysis = catchAsync(async (req, res) => {
   })
 })
 
+/**
+ * Update analysis title
+ * PUT /resumeAnalysis/:id/title
+ */
+const updateTitle = catchAsync(async (req, res) => {
+  const { id } = req.params
+  const { title } = req.body
+
+  if (!title) {
+    return res.status(httpStatus.BAD_REQUEST).json({
+      success: false,
+      message: 'Title is required',
+    })
+  }
+
+  const result = await resumeAnalysisServices.updateAnalysisTitle(id, title)
+
+  if (!result) {
+    return res.status(httpStatus.NOT_FOUND).json({
+      success: false,
+      message: 'Resume analysis not found',
+    })
+  }
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Resume analysis title updated successfully',
+    data: result,
+  })
+})
+
 export const resumeAnalysisControllers = {
   analyzeResume,
   analyzeResumeForJob,
@@ -153,4 +188,5 @@ export const resumeAnalysisControllers = {
   getAnalysisById,
   getCandidateAnalyses,
   deleteAnalysis,
+  updateTitle,
 }

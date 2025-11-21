@@ -30,6 +30,7 @@ Complete API documentation with ready-to-use JSON examples for testing all POST 
 POST   /candidate              - Create candidate
 GET    /candidate              - Get all candidates
 GET    /candidate/:id          - Get candidate by ID
+GET    /candidate/slug/:slug   - Get candidate by slug
 GET    /candidate/email/:email - Get candidate by email
 PUT    /candidate/:id          - Update candidate
 PUT    /candidate/avatar/:id   - Update avatar (multipart/form-data)
@@ -81,6 +82,7 @@ DELETE /candidate/:id          - Delete candidate
 POST   /company         - Create company
 GET    /company         - Get all companies
 GET    /company/:id     - Get company by ID
+GET    /company/slug/:slug - Get company by slug
 GET    /company/:username - Get company by username
 PUT    /company/update/:id - Update company (with logo upload)
 DELETE /company/:id     - Delete company
@@ -1410,47 +1412,6 @@ All API responses follow this format:
 POST   /resumeAnalysis/analyze           - Analyze resume (general ATS check)
 POST   /resumeAnalysis/analyze-for-job   - Analyze resume for specific job
 GET    /resumeAnalysis                   - Get all analyses
-GET    /resumeAnalysis/:id               - Get analysis by ID
-GET    /resumeAnalysis/candidate/:candidateId - Get candidate's analyses
-DELETE /resumeAnalysis/:id               - Delete analysis
-```
-
-### POST - Analyze Resume (General ATS Check)
-
-**Endpoint:** `POST /resumeAnalysis/analyze`
-
-**Content-Type:** `multipart/form-data`
-
-**Form Data:**
-
-- `candidateId`: "507f1f77bcf86cd799439013"
-- `resumeId`: "507f1f77bcf86cd799439020" (optional)
-- `resume`: [PDF file upload]
-
-**Description:** Upload a resume PDF and get comprehensive ATS (Applicant Tracking System) analysis including:
-
-- ATS compatibility score
-- Keyword analysis
-- Formatting evaluation
-- Strengths and weaknesses
-- Improvement suggestions
-- Section detection
-
-**Response Example:**
-
-```json
-{
-  "statusCode": 200,
-  "success": true,
-  "message": "Resume analyzed successfully",
-  "data": {
-    "_id": "507f1f77bcf86cd799439025",
-    "candidateId": "507f1f77bcf86cd799439013",
-    "resumeUrl": "https://res.cloudinary.com/.../resume.pdf",
-    "analysisType": "general",
-    "atsScore": 85,
-    "keywordScore": 78,
-    "formattingScore": 90,
     "overallScore": 84,
     "strengths": [
       "Clear and professional formatting",
@@ -1492,20 +1453,9 @@ DELETE /resumeAnalysis/:id               - Delete analysis
 
 ---
 
-### POST - Analyze Resume for Job
+}
 
-**Endpoint:** `POST /resumeAnalysis/analyze-for-job`
-
-**Content-Type:** `multipart/form-data`
-
-**Form Data:**
-
-- `candidateId`: "507f1f77bcf86cd799439013"
-- `jobId`: "507f1f77bcf86cd799439015"
-- `resumeId`: "507f1f77bcf86cd799439020" (optional)
-- `resume`: [PDF file upload]
-
-**Description:** Analyze how well a resume matches a specific job posting. Provides job-specific keyword matching, gap analysis, and tailored suggestions.
+````
 
 **Response Example:**
 
@@ -1566,7 +1516,7 @@ DELETE /resumeAnalysis/:id               - Delete analysis
     "createdAt": "2024-06-15T10:35:00.000Z"
   }
 }
-```
+````
 
 ---
 
@@ -1653,12 +1603,13 @@ Form Data:
 
 ```
 POST /resumeAnalysis/analyze-for-job
-Content-Type: multipart/form-data
+Content-Type: application/json
 
-Form Data:
-- candidateId: "507f1f77bcf86cd799439013"
-- jobId: "507f1f77bcf86cd799439015"
-- resume: [upload resume.pdf]
+{
+  "candidateId": "507f1f77bcf86cd799439013",
+  "jobId": "507f1f77bcf86cd799439015",
+  "resumeAnalysisId": "507f1f77bcf86cd799439025"
+}
 ```
 
 **Step 3: Review Analysis Results**
