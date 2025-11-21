@@ -8,6 +8,7 @@ const router = express.Router()
 router.post('/', companyControllers.create)
 router.get('/', companyControllers.getAll)
 router.get('/:username', companyControllers.getByUsername)
+router.get('/slug/:slug', companyControllers.getBySlug)
 router.get('/:id', companyControllers.getById)
 router.delete('/:id', companyControllers.deleteCompany)
 router.post(

@@ -10,6 +10,7 @@ const router = express.Router()
 router.post('/', userControllers.createUser)
 router.get('/', userControllers.getAllUser)
 router.get('/:id', userControllers.getUserById)
+router.get('/slug/:slug', userControllers.getBySlug)
 router.get('/email/:email', userControllers.getSingleUser)
 router.put(
   '/:id',

@@ -49,6 +49,17 @@ const getSingleUser = catchAsync(async (req, res) => {
   })
 })
 
+const getBySlug = catchAsync(async (req, res) => {
+  const { slug } = req.params
+  const result = await candidateServices.getCandidateBySlugFromDB(slug)
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Candidate retrieved successfully',
+    data: result,
+  })
+})
+
 const updateUser = catchAsync(async (req, res) => {
   const { id } = req.params
   const payload = req.body
@@ -105,6 +116,7 @@ export const userControllers = {
   getAllUser,
   getUserById,
   getSingleUser,
+  getBySlug,
   updateUser,
   updateUserAvatar,
   deleteUser,

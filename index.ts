@@ -12,6 +12,7 @@ export interface OrganizationType {
 export interface Company {
   id: ID
   name: string
+  slug: string
   email: string
   organizationTypeId: ObjectId
   location: string
@@ -45,6 +46,7 @@ export interface Candidate {
   id: ID
   name: string
   email: string
+  slug: string
   phone: string
   avatar: string
   skills: JSONValue

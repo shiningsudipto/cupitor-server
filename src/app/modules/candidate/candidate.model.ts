@@ -5,6 +5,7 @@ import config from '../../config'
 export type TCandidate = {
   _id: string
   name: string
+  slug: string
   email: string
   avatar?: string
   password: string
@@ -40,6 +41,7 @@ export interface UserModel extends Model<TCandidate> {
 const candidateSchema = new Schema<TCandidate, UserModel>(
   {
     name: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     avatar: { type: String },

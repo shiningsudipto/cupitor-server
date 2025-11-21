@@ -48,39 +48,25 @@ const analyzeResume = catchAsync(async (req, res) => {
  * POST /resumeAnalysis/analyze-for-job
  */
 const analyzeResumeForJob = catchAsync(async (req, res) => {
-  const { candidateId, jobId, resumeId } = req.body
-  const files = req.files as { resume?: Express.Multer.File[] }
-  const resumeFile = files?.resume?.[0]
+  const { candidateId, jobId, resumeAnalysisId } = req.body
 
-  if (!resumeFile) {
-    return res.status(httpStatus.BAD_REQUEST).json({
-      success: false,
-      message: 'Resume file is required',
+  // If resumeAnalysisId is provided, use existing analysis
+  if (resumeAnalysisId) {
+    const result =
+      await resumeAnalysisServices.analyzeResumeForJobFromExistingAnalysis(
+        candidateId,
+        jobId,
+        resumeAnalysisId,
+      )
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Resume analyzed for job successfully',
+      data: result,
     })
+    return
   }
-
-  // Get file path (local or Cloudinary URL)
-  const filePath = resumeFile.path
-
-  // For storage, use Cloudinary URL if available, otherwise use filename
-  const resumeUrl = resumeFile.path.startsWith('http')
-    ? resumeFile.path
-    : `/uploads/${resumeFile.filename}`
-
-  const result = await resumeAnalysisServices.analyzeResumeForJobPosting(
-    candidateId,
-    jobId,
-    filePath,
-    resumeUrl,
-    resumeId,
-  )
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'Resume analyzed for job successfully',
-    data: result,
-  })
 })
 
 /**

@@ -11,6 +11,7 @@ export interface TCompany {
   _id: string
   name: string
   username: string
+  slug: string
   email: string
   logo?: string
   companyType: ObjectId
@@ -33,6 +34,7 @@ const companyTypeSchema = new Schema<TCompanyType>({
 const companySchema = new Schema<TCompany, CompanyModel>(
   {
     name: { type: String, required: true },
+    slug: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     logo: { type: String },
     username: { type: String, required: true, unique: true },

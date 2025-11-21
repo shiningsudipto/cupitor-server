@@ -1,6 +1,20 @@
 import { TCandidate, Candidate } from './candidate.model'
 
+import { generateSlug } from '../../utils/slugGenerator'
+
 const createCandidateIntoDb = async (data: TCandidate) => {
+  const username = data.email.split('@')[0]
+  let slug = generateSlug(`${data.name} ${username}`)
+  let existingCandidate = await Candidate.findOne({ slug })
+  let counter = 1
+
+  while (existingCandidate) {
+    slug = generateSlug(`${data.name} ${username} ${counter}`)
+    existingCandidate = await Candidate.findOne({ slug })
+    counter++
+  }
+
+  data.slug = slug
   const result = await Candidate.create(data)
   return result
 }
@@ -41,6 +55,14 @@ const getCandidateFromDB = async (email: string) => {
   return result
 }
 
+const getCandidateBySlugFromDB = async (slug: string) => {
+  const result = await Candidate.findOne({ slug })
+  if (!result) {
+    throw new Error('Candidate not found!')
+  }
+  return result
+}
+
 const getCandidateByIdFromDB = async (id: string) => {
   const result = await Candidate.findById(id)
   if (!result) {
@@ -60,6 +82,7 @@ const deleteCandidateFromDB = async (id: string) => {
 export const candidateServices = {
   createCandidateIntoDb,
   getCandidateFromDB,
+  getCandidateBySlugFromDB,
   getCandidateByIdFromDB,
   updateCandidateIntoDB,
   updateCandidateAvatarIntoDB,

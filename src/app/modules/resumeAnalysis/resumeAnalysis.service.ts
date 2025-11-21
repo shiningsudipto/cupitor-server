@@ -134,6 +134,58 @@ const analyzeResumeForJobPosting = async (
 }
 
 /**
+ * Analyze resume for job using existing analysis
+ * @param candidateId - ID of the candidate
+ * @param jobId - ID of the job posting
+ * @param resumeAnalysisId - ID of the existing resume analysis
+ * @returns Created resume analysis document
+ */
+const analyzeResumeForJobFromExistingAnalysis = async (
+  candidateId: string,
+  jobId: string,
+  resumeAnalysisId: string,
+): Promise<TResumeAnalysis> => {
+  try {
+    // Get existing analysis
+    const existingAnalysis = await ResumeAnalysis.findById(resumeAnalysisId)
+    if (!existingAnalysis) {
+      throw new Error('Resume analysis not found')
+    }
+
+    // Get job details
+    const job = await JobModel.findById(jobId).populate('jobType')
+    if (!job) {
+      throw new Error('Job not found')
+    }
+
+    // Analyze with AI against job requirements
+    const aiResult = await analyzeResumeForJob(
+      existingAnalysis.parsedContent,
+      job.description + '\n\nRequirements:\n' + job.requirements,
+      job.title,
+      job.skills || [],
+    )
+
+    // Create analysis document
+    const analysisData = {
+      candidateId,
+      jobId,
+      resumeId: existingAnalysis.resumeId,
+      resumeUrl: existingAnalysis.resumeUrl,
+      parsedContent: existingAnalysis.parsedContent,
+      analysisType: 'job-specific' as const,
+      ...aiResult,
+    }
+
+    const result = await ResumeAnalysis.create(analysisData)
+    return result
+  } catch (error) {
+    console.error('Error analyzing resume for job from existing:', error)
+    throw new Error('Failed to analyze resume for job from existing analysis')
+  }
+}
+
+/**
  * Get analysis by ID
  * @param id - Analysis ID
  * @returns Resume analysis document
@@ -187,6 +239,7 @@ const deleteAnalysis = async (id: string): Promise<TResumeAnalysis | null> => {
 export const resumeAnalysisServices = {
   analyzeResumeFromPDF,
   analyzeResumeForJobPosting,
+  analyzeResumeForJobFromExistingAnalysis,
   getAnalysisById,
   getCandidateAnalyses,
   getAllAnalyses,

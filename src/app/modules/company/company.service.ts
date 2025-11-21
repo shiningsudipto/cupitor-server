@@ -1,6 +1,24 @@
 import { Company, CompanyType, TCompany } from './company.model'
 
+import { generateSlug } from '../../utils/slugGenerator'
+
 const createCompanyIntoDb = async (data: TCompany) => {
+  const companyType = await CompanyType.findById(data.companyType)
+  if (!companyType) {
+    throw new Error('Company Type not found')
+  }
+
+  let slug = generateSlug(`${data.name} ${companyType.label}`)
+  let existingCompany = await Company.findOne({ slug })
+  let counter = 1
+
+  while (existingCompany) {
+    slug = generateSlug(`${data.name} ${companyType.label} ${counter}`)
+    existingCompany = await Company.findOne({ slug })
+    counter++
+  }
+
+  data.slug = slug
   const result = await Company.create(data)
   return result
 }
@@ -29,6 +47,15 @@ const getCompanyFromDB = async (username: string) => {
   const result = await Company.findOne({ username })
   return result
 }
+
+const getCompanyBySlugFromDB = async (slug: string) => {
+  const result = await Company.findOne({ slug }).populate('companyType')
+  if (!result) {
+    throw new Error('Company not found!')
+  }
+  return result
+}
+
 const getCompanyByIdFromDB = async (id: string) => {
   const result = await Company.findById(id)
   if (!result) {
@@ -50,6 +77,7 @@ const getAllCompanyTypesFromDB = async () => {
 export const companyServices = {
   createCompanyIntoDb,
   getCompanyFromDB,
+  getCompanyBySlugFromDB,
   getCompanyByIdFromDB,
   updateCompanyIntoDB,
   updateCompanyLogoIntoDB,

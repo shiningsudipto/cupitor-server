@@ -45,6 +45,17 @@ const getByUsername = catchAsync(async (req, res) => {
   })
 })
 
+const getBySlug = catchAsync(async (req, res) => {
+  const { slug } = req.params
+  const result = await companyServices.getCompanyBySlugFromDB(slug)
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Company retrieved successfully',
+    data: result,
+  })
+})
+
 const getById = catchAsync(async (req, res) => {
   const { id } = req.params
   const result = await companyServices.getCompanyByIdFromDB(id)
@@ -112,6 +123,7 @@ export const companyControllers = {
   getAll,
   getById,
   getByUsername,
+  getBySlug,
   update,
   deleteCompany,
   createCompanyType,
