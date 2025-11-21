@@ -13,11 +13,7 @@ router.post(
 )
 
 // Analyze resume for specific job
-router.post(
-  '/analyze-for-job',
-  parseBody,
-  resumeAnalysisControllers.analyzeResumeForJob,
-)
+router.post('/analyze-for-job', resumeAnalysisControllers.analyzeResumeForJob)
 
 // Get all analyses
 router.get('/', resumeAnalysisControllers.getAllAnalyses)
